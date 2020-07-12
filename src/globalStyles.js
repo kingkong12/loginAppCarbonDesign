@@ -7,15 +7,28 @@ import { createGlobalStyle } from 'styled-components'
 */
 
 export default createGlobalStyle`
-  body {
+ body {
       margin: 0;
       padding: 0;
-      color: ${(props) => props.theme.primaryTextColor}
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+      height: 100vh;
+  }
+  #root {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+     min-height: 100vh;
+     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
           'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
           'Helvetica Neue', sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+    color: ${(props) => props.theme.primaryTextColor};
+    background-color: ${(props) => props.theme.bodyBackgroundColor};   
+    font-size: 12px;
+}
+  *{
+      box-sizing: border-box;
   }
   code {
       font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
