@@ -10,8 +10,9 @@ import GlobalStyles from 'globalStyles'
 import theme from 'theme'
 import configureStore, { history } from 'store'
 import * as serviceWorker from 'serviceWorker'
-import { Button } from 'carbon-components-react'
+
 import Logintemplate from './ui/templates/Logintemplate'
+import Regsitration from './ui/container/Regsitration'
 
 const store = configureStore(/* provide initial state if any */)
 
@@ -25,8 +26,8 @@ const App = () => (
         <Logintemplate>
           <Switch>
             {/* Renders the first child <Route> or <Redirect> that matches the location. */}
-            <Route exact path="/" render={() => <div> <Button>Button</Button></div>} />
-            <Route render={() => <div>Miss</div>} />
+            <Route exact path="/" render={() => <Regsitration />} />
+            <Route exact path="/registration" render={() => <div>Miss</div>} />
           </Switch>
         </Logintemplate>
       </ConnectedRouter>
