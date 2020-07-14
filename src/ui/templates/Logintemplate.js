@@ -25,6 +25,7 @@ const Container = styled.div`
   margin: 0px;
 `
 const Content = styled.div`
+  flex: 1;
   width: 100%;
   justify-content: center;
   display: flex;

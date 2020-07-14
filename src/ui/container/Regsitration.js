@@ -6,7 +6,6 @@ import {
   TextInput,
   Select,
   Dropdown,
-  SelectItem,
   Form,
   Button
 } from 'carbon-components-react'
@@ -225,9 +224,6 @@ const StyledSelect = styled(Select)`
       top: 0px;
     }
   }
-`
-const StyledSelectItem = styled(SelectItem)`
-  min-width: 368px !important;
 `
 
 const Container = styled.div``
