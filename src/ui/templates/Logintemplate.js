@@ -26,5 +26,7 @@ const Container = styled.div`
 `
 const Content = styled.div`
   width: 100%;
-  background-color: lightblue;
+  justify-content: center;
+  display: flex;
+  margin: auto;
 `
