@@ -12,7 +12,7 @@ import configureStore, { history } from 'store'
 import * as serviceWorker from 'serviceWorker'
 
 import Template from './ui/templates/Template'
-import Regsitration from './ui/container/Regsitration'
+// import Regsitration from './ui/container/Regsitration'
 import Loginform from './ui/container/Loginform'
 
 const store = configureStore(/* provide initial state if any */)

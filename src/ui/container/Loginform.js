@@ -5,9 +5,13 @@ import {
   TextInput,
   FormLabel,
   Checkbox,
+  Icon,
   Button as CarbonButton
 } from 'carbon-components-react'
 import styled from 'styled-components'
+import { connect } from 'react-redux'
+import { push } from 'connected-react-router'
+import { iconArrowLeft } from 'carbon-icons'
 // constants-helpers
 import { organizationMinLength, emailRegex } from '../../const/fieldConstants'
 import query from '../../const/mediaQuery'
@@ -15,7 +19,7 @@ import errorMessages from '../../const/errorMessages'
 // components
 import { PageHeader, SubHeader } from './Regsitration'
 
-const Loginform = () => {
+const Loginform = (props) => {
   const emailRef = useRef(null)
   const [state, setState] = useState({
     loginEmail: '',
@@ -35,6 +39,11 @@ const Loginform = () => {
     }
   }
 
+  const passwordValidation = (value) => {
+    if (value < 6) {
+      setState({ ...state, passwordError: errorMessages.lessthanSix })
+    }
+  }
   const renderForm = () => {
     switch (step) {
       case 1:
@@ -57,7 +66,7 @@ const Loginform = () => {
       case 2:
         return (
           <TextInput
-            //ref={emailRef}
+            ref={emailRef}
             value={loginPassword}
             onInput={(e) =>
               setState({ ...state, loginPassword: e.target.value })
@@ -70,7 +79,7 @@ const Loginform = () => {
             required
             invalidText={passwordError}
             maxLength={organizationMinLength}
-            //onBlur={(e) => emailValidation(e.target.value)}
+            onBlur={(e) => passwordValidation(e.target.value)}
           />
         )
       default:
@@ -92,19 +101,45 @@ const Loginform = () => {
     <Container>
       <PageHeader>Log in</PageHeader>
       <SubHeader>
-        Don't have an Account? <Link> Register Now </Link>
+        Don't have an Account?
+        <Link onClick={() => props.push('/registration')}>
+          {'\u00A0'}Register Now
+        </Link>
       </SubHeader>
-      <StyledFormLabel> Enter Your Strobes ID</StyledFormLabel>
+      <StyledFormLabel>
+        {step === 1 ? (
+          'Enter Your Strobes ID'
+        ) : (
+          <Goback>
+            <StyledIcon
+              icon={iconArrowLeft}
+              fill="#0F62FE"
+              description="Go Back"
+              onClick={() => setState({ ...state, step: 1 })}
+            />
+            {loginEmail}
+          </Goback>
+        )}
+      </StyledFormLabel>
       <FluidForm id="loginform" onSubmit={(e) => onSubmit(e)}>
         {renderForm()}
         <Button type="submit"> Continue </Button>
       </FluidForm>
       <ForgotPassword>
         <Checkbox id="remember-me" labelText="Remember Me" />
-        <Link> Forgot you Passowrd ? </Link>
+        <Link
+          onClick={() => {
+            alert('TODO:  forgot pasword module to be build')
+          }}
+        >
+          Forgot you Passowrd ?
+        </Link>
       </ForgotPassword>
       <AlternateLogin>
-        <Link> Alternate Login </Link>
+        <Link onClick={() => alert('TO DO:  Alterante login module ')}>
+          {' '}
+          Alternate Login{' '}
+        </Link>
       </AlternateLogin>
     </Container>
   )
@@ -138,4 +173,12 @@ const AlternateLogin = styled.div`
   margin-top: 37px;
 `
 
-export default Loginform
+const StyledIcon = styled(Icon)`
+  margin-right: 9px;
+`
+
+const Goback = styled.div`
+  font-size: 0.875rem;
+  color: ${(props) => props.theme.nero};
+`
+export default connect(null, { push })(Loginform)
