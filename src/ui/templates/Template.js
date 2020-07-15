@@ -3,7 +3,7 @@ import styled from 'styled-components'
 // components
 import Sidebar from '../organisms/Sidebar'
 
-const Logintemplate = ({ children, ...props }) => {
+const Template = ({ children, ...props }) => {
   return (
     <Container>
       <Sidebar
@@ -17,7 +17,7 @@ const Logintemplate = ({ children, ...props }) => {
   )
 }
 
-export default Logintemplate
+export default Template
 
 const Container = styled.div`
   display: flex;

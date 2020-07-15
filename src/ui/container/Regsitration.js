@@ -226,13 +226,13 @@ const StyledSelect = styled(Select)`
   }
 `
 
-const Container = styled.div``
+export const Container = styled.div``
 
-const PageHeader = styled.h2`
+export const PageHeader = styled.h2`
   font-size: 2rem;
   margin-bottom: 4px;
 `
-const SubHeader = styled.div`
+export const SubHeader = styled.div`
   font-size: 0.875rem;
   color: ${(props) => props.theme.nero};
   margin-bottom: 64px;

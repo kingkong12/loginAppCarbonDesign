@@ -1,4 +1,5 @@
 const errorMessages = {
+  lessthanSix: 'Cannot be Empty or less then 6 Char',
   emptyField: 'This Field Cannot be empty',
   lessThenFiveChar: 'Field Cannot be less then Five Character',
   piackAvalue: 'Please Pick a Value',
