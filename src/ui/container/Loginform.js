@@ -102,7 +102,7 @@ const Loginform = (props) => {
       <PageHeader>Log in</PageHeader>
       <SubHeader>
         Don't have an Account?
-        <Link onClick={() => props.push('/registration')}>
+        <Link onClick={() => props.push({ pathname: '/registration' })}>
           {'\u00A0'}Register Now
         </Link>
       </SubHeader>
@@ -181,4 +181,10 @@ const Goback = styled.div`
   font-size: 0.875rem;
   color: ${(props) => props.theme.nero};
 `
-export default connect(null, { push })(Loginform)
+const mapStateToProps = (state) => {
+  return {
+    router: state.router
+  }
+}
+
+export default connect(mapStateToProps, { push })(Loginform)
