@@ -4,18 +4,18 @@ import {
   Link,
   FluidForm,
   TextInput,
-  Select,
   Dropdown,
-  Form,
   Button
 } from 'carbon-components-react'
+import { connect } from 'react-redux'
+import { push } from 'connected-react-router'
 import query from '../../const/mediaQuery'
 import { emailRegex } from '../../const/fieldConstants'
 // components
 import items from '../../const/dropdownList'
 import errorMessages from '../../const/errorMessages'
 
-const Regsitration = () => {
+const Regsitration = (props) => {
   const [state, setState] = useState({
     allFields: {
       firstName: '',
@@ -38,14 +38,14 @@ const Regsitration = () => {
   const { firstName, lastName, company, iam, email, password } = state.allFields
   const { errorMsg } = state
 
-  const setError = (errorField, errorMsg) =>
+  const setError = (errorField, errorMessage) =>
     setTimeout(
       () =>
         setState({
           ...state,
-          errorMsg: { ...state.errorMsg, [errorField]: errorMsg }
+          errorMsg: { ...state.errorMsg, [errorField]: errorMessage }
         }),
-      100
+      50
     )
 
   const updateFieldsValue = (filedName, value) => {
@@ -99,7 +99,8 @@ const Regsitration = () => {
     <Container>
       <PageHeader>Register</PageHeader>
       <SubHeader>
-        Alreadty have an account ? <Link> Log In </Link>
+        Alreadty have an account ?{' '}
+        <Link onClick={() => props.push({ pathname: '/' })}> Log In </Link>
       </SubHeader>
 
       <StyledFluidForm id="registratitonForm" onSubmit={(e) => submitForm(e)}>
@@ -107,6 +108,7 @@ const Regsitration = () => {
           <TextInput
             id="firstName"
             labelText="First Name"
+            placeholder="Jhon"
             required
             invalid={Boolean(errorMsg.firstName)}
             invalidText={errorMsg.firstName}
@@ -122,6 +124,7 @@ const Regsitration = () => {
             id="lastName"
             labelText="Last Name"
             required
+            placeholder="Doe"
             invalid={Boolean(errorMsg.lastName)}
             invalidText={errorMsg.lastName}
             value={lastName}
@@ -136,6 +139,7 @@ const Regsitration = () => {
             id="company"
             labelText="Company"
             required
+            placeholder="Acme Corp Inc"
             invalid={Boolean(errorMsg.company)}
             invalidText={errorMsg.company}
             size="xl"
@@ -166,6 +170,7 @@ const Regsitration = () => {
             labelText="Email"
             required
             size="xl"
+            placeholder="john.doe@example.com"
             maxLength={50}
             value={email}
             invalid={Boolean(errorMsg.email)}
@@ -177,12 +182,14 @@ const Regsitration = () => {
           <TextInput
             type="password"
             id="password"
+            placeholder="**********"
             labelText="Password"
             required
             invalid={Boolean(errorMsg.password)}
             invalidText={errorMsg.password}
             maxLength={70}
             value={password}
+            //TODO: Show and Hide button
             onInput={(e) => updateFieldsValue(e.target.id, e.target.value)}
             onBlur={(e) => {
               if (e.target.value.length < 6) {
@@ -225,7 +232,17 @@ const StyledButton = styled(Button)`
   margin-top: 30px;
 `
 
-export const Container = styled.div``
+export const Container = styled.div`
+  width: 77.4%;
+
+  @media ${query.greaterThanLarge} {
+    max-width: 768px;
+  }
+  @media ${query.lessThanMedium} {
+    width: 100%;
+    margin: 0px 16px;
+  }
+`
 
 export const PageHeader = styled.h2`
   font-size: 2rem;
@@ -249,4 +266,11 @@ const FieldWrapper = styled.div`
 const StyledDropdown = styled(Dropdown)`
   min-height: 64px;
 `
-export default Regsitration
+
+const mapStateToProps = (state) => {
+  return {
+    router: state.router
+  }
+}
+
+export default connect(mapStateToProps, { push })(Regsitration)
