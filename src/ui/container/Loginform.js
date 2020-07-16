@@ -11,9 +11,13 @@ import {
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 import { push } from 'connected-react-router'
-import { iconArrowLeft } from 'carbon-icons'
+import { iconArrowLeft, iconArrowRight } from 'carbon-icons'
 // constants-helpers
-import { organizationMinLength, emailRegex } from '../../const/fieldConstants'
+import {
+  organizationMinLength,
+  emailRegex,
+  loginOption
+} from '../../const/fieldConstants'
 import query from '../../const/mediaQuery'
 import errorMessages from '../../const/errorMessages'
 // components
@@ -23,12 +27,22 @@ const Loginform = (props) => {
   const emailRef = useRef(null)
   const [state, setState] = useState({
     loginEmail: '',
+    organizationName: '',
+    organizationNameError: '',
     loginPassword: '',
     emailError: '',
     passwordError: '',
-    step: 1
+    step: 4
   })
-  const { loginEmail, loginPassword, emailError, step, passwordError } = state
+  const {
+    loginEmail,
+    organizationName,
+    loginPassword,
+    emailError,
+    organizationNameError,
+    step,
+    passwordError
+  } = state
   const emailValidation = (value) => {
     if (value < 6) {
       setState({ ...state, emailError: errorMessages.lessthanSix })
@@ -44,7 +58,30 @@ const Loginform = (props) => {
       setState({ ...state, passwordError: errorMessages.lessthanSix })
     }
   }
-  const renderForm = () => {
+
+  const renderLable = () => {
+    switch (step) {
+      case 1:
+        return 'Enter Your Strobes ID'
+      case 2:
+        return (
+          <Goback>
+            <StyledIcon
+              icon={iconArrowLeft}
+              fill="#0F62FE"
+              description="Go Back"
+              onClick={() => setState({ ...state, step: 1 })}
+            />
+            {loginEmail}
+          </Goback>
+        )
+      case 3:
+        return 'Enter your organization'
+      default:
+        return null
+    }
+  }
+  const renderEmailForm = () => {
     switch (step) {
       case 1:
         return (
@@ -82,6 +119,50 @@ const Loginform = (props) => {
             onBlur={(e) => passwordValidation(e.target.value)}
           />
         )
+      case 3:
+        return (
+          <TextInput
+            //ref={emailRef}
+            value={organizationName}
+            onInput={(e) => setState({ ...state, loginEmail: e.target.value })}
+            type="text"
+            id="organizationName"
+            labelText="Organization Name"
+            placeholder="myorg.strobes.co"
+            invalid={Boolean(organizationNameError)}
+            required
+            invalidText={organizationNameError}
+            maxLength={organizationMinLength}
+            onBlur={(e) => emailValidation(e.target.value)}
+          />
+        )
+      case 4:
+        return (
+          <>
+            <Button
+              onClick={() =>
+                setState({
+                  step: 1
+                })
+              }
+              kind="tertiary"
+            >
+              Continue as email
+            </Button>
+            {/* {loginOption.map((item, index) => (
+              <Button
+                onClick={() =>
+                  alert(
+                    'Module yet to implement, till then please try to use  LOGIN with email'
+                  )
+                }
+                kind="tertiary"
+              >
+                {item}
+              </Button>
+            ))} */}
+          </>
+        )
       default:
         return <div> Failed to load form </div>
     }
@@ -106,27 +187,15 @@ const Loginform = (props) => {
           {'\u00A0'}Register Now
         </Link>
       </SubHeader>
-      <StyledFormLabel>
-        {step === 1 ? (
-          'Enter Your Strobes ID'
-        ) : (
-          <Goback>
-            <StyledIcon
-              icon={iconArrowLeft}
-              fill="#0F62FE"
-              description="Go Back"
-              onClick={() => setState({ ...state, step: 1 })}
-            />
-            {loginEmail}
-          </Goback>
-        )}
-      </StyledFormLabel>
+      <StyledFormLabel>{renderLable()}</StyledFormLabel>
       <FluidForm id="loginform" onSubmit={(e) => onSubmit(e)}>
-        {renderForm()}
-        <Button type="submit"> Continue </Button>
+        {renderEmailForm()}
+        {step === 4 ? null : <Button type="submit"> Continue </Button>}
       </FluidForm>
       <ForgotPassword>
-        <Checkbox id="remember-me" labelText="Remember Me" />
+        {step === 3 || step === 4 ? null : (
+          <Checkbox id="remember-me" labelText="Remember Me" />
+        )}
         <Link
           onClick={() => {
             alert('TODO:  forgot pasword module to be build')
@@ -135,12 +204,13 @@ const Loginform = (props) => {
           Forgot you Passowrd ?
         </Link>
       </ForgotPassword>
-      <AlternateLogin>
-        <Link onClick={() => alert('TO DO:  Alterante login module ')}>
-          {' '}
-          Alternate Login{' '}
-        </Link>
-      </AlternateLogin>
+      {step === 3 || step === 4 ? null : (
+        <AlternateLogin>
+          <Link onClick={() => alert('TO DO:  Alterante login module ')}>
+            Alternate Login
+          </Link>
+        </AlternateLogin>
+      )}
     </Container>
   )
 }
