@@ -14,15 +14,11 @@ import { connect } from 'react-redux'
 import { push } from 'connected-react-router'
 import axios from 'axios'
 
-import { iconArrowLeft, iconArrowRight } from 'carbon-icons'
+import { iconArrowLeft } from 'carbon-icons'
 // constants-helpers
 
 import baseApi from '../../services/api'
-import {
-  organizationMinLength,
-  emailRegex,
-  loginOption
-} from '../../const/fieldConstants'
+import { organizationMinLength, emailRegex } from '../../const/fieldConstants'
 import query from '../../const/mediaQuery'
 import errorMessages from '../../const/errorMessages'
 // components
@@ -225,11 +221,11 @@ const Loginform = (props) => {
           <Button
             onClick={(e) => {
               let newStep = 0
-              if (step == 3) newStep = step + 1
-              if (step == 4) newStep = 1
-              if (step == 1)
+              if (step === 3) newStep = step + 1
+              if (step === 4) newStep = 1
+              if (step === 1)
                 emailError ? (newStep = step) : (newStep = step + 1)
-              if (step == 2) {
+              if (step === 2) {
                 newStep = step
                 onSubmit(e)
               }
