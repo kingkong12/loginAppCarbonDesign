@@ -6,13 +6,18 @@ import {
   FormLabel,
   Checkbox,
   Icon,
+  InlineNotification,
   Button as CarbonButton
 } from 'carbon-components-react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 import { push } from 'connected-react-router'
+import axios from 'axios'
+
 import { iconArrowLeft, iconArrowRight } from 'carbon-icons'
 // constants-helpers
+
+import baseApi from '../../services/api'
 import {
   organizationMinLength,
   emailRegex,
@@ -26,13 +31,14 @@ import { PageHeader, SubHeader } from './Regsitration'
 const Loginform = (props) => {
   const emailRef = useRef(null)
   const [state, setState] = useState({
-    loginEmail: '',
+    loginEmail: props.router?.location?.state?.email || '',
     organizationName: '',
     organizationNameError: '',
     loginPassword: '',
     emailError: '',
     passwordError: '',
-    step: 4
+    networkError: '',
+    step: props.router?.location?.state?.step || 3
   })
   const {
     loginEmail,
@@ -87,7 +93,7 @@ const Loginform = (props) => {
         return (
           <TextInput
             ref={emailRef}
-            value={loginEmail}
+            value={loginEmail || ''}
             onInput={(e) => setState({ ...state, loginEmail: e.target.value })}
             type="text"
             id="loginEmail"
@@ -103,8 +109,8 @@ const Loginform = (props) => {
       case 2:
         return (
           <TextInput
-            ref={emailRef}
-            value={loginPassword}
+            //  TODO:  ahow and hide in password
+            value={loginPassword || ''}
             onInput={(e) =>
               setState({ ...state, loginPassword: e.target.value })
             }
@@ -122,9 +128,10 @@ const Loginform = (props) => {
       case 3:
         return (
           <TextInput
-            //ref={emailRef}
             value={organizationName}
-            onInput={(e) => setState({ ...state, loginEmail: e.target.value })}
+            onInput={(e) =>
+              setState({ ...state, organizationName: e.target.value })
+            }
             type="text"
             id="organizationName"
             labelText="Organization Name"
@@ -133,7 +140,7 @@ const Loginform = (props) => {
             required
             invalidText={organizationNameError}
             maxLength={organizationMinLength}
-            onBlur={(e) => emailValidation(e.target.value)}
+            // onBlur={(e) => emailValidation(e.target.value)}
           />
         )
       case 4:
@@ -158,7 +165,7 @@ const Loginform = (props) => {
                 }
                 kind="tertiary"
               >
-                {item}
+                {item}sub
               </Button>
             ))} */}
           </>
@@ -170,12 +177,36 @@ const Loginform = (props) => {
 
   const onSubmit = async (e) => {
     e.preventDefault()
-    // const formValue = document.getElementById('loginEmail').value
-    // console.log('faornvalue')
-    if (state.emailError) {
-      return
+    if (state.emailError || state.passwordError) {
+      setState({
+        ...state,
+        errorMsg: {
+          ...state.errorMsg,
+          networkError: 'One or more filed has error or is  empty'
+        }
+      })
+    } else {
+      axios.get(`${baseApi}/users`).then((response) => {
+        const { data } = response
+        if (
+          data.find(
+            (elm) => elm.email === loginEmail && elm.password === loginPassword
+          )
+        ) {
+          setState({
+            ...state,
+            networkError: ''
+          })
+          props.push({ pathname: '/registration' })
+        } else {
+          setState({
+            ...state,
+            networkError: 'Email or Password not incorrect'
+          })
+          return
+        }
+      })
     }
-    if (state.step === 1) setState({ ...state, step: 2 })
   }
 
   return (
@@ -188,9 +219,26 @@ const Loginform = (props) => {
         </Link>
       </SubHeader>
       <StyledFormLabel>{renderLable()}</StyledFormLabel>
-      <FluidForm id="loginform" onSubmit={(e) => onSubmit(e)}>
+      <FluidForm id="loginform">
         {renderEmailForm()}
-        {step === 4 ? null : <Button type="submit"> Continue </Button>}
+        {step === 4 ? null : (
+          <Button
+            onClick={(e) => {
+              let newStep = 0
+              if (step == 3) newStep = step + 1
+              if (step == 4) newStep = 1
+              if (step == 1)
+                emailError ? (newStep = step) : (newStep = step + 1)
+              if (step == 2) {
+                newStep = step
+                onSubmit(e)
+              }
+              setState({ ...state, step: newStep })
+            }}
+          >
+            Continue
+          </Button>
+        )}
       </FluidForm>
       <ForgotPassword>
         {step === 3 || step === 4 ? null : (
@@ -210,6 +258,20 @@ const Loginform = (props) => {
             Alternate Login
           </Link>
         </AlternateLogin>
+      )}
+
+      {state.networkError && (
+        <StyledNotification
+          kind="error"
+          role="alert"
+          title={state.networkError}
+          onCloseButtonClick={() =>
+            setState({
+              ...state,
+              networkError: ''
+            })
+          }
+        />
       )}
     </Container>
   )
@@ -257,4 +319,8 @@ const mapStateToProps = (state) => {
   }
 }
 
+const StyledNotification = styled(InlineNotification)`
+  background-color: #fdf1f1;
+  color: #4d4949;
+`
 export default connect(mapStateToProps, { push })(Loginform)
