@@ -5,12 +5,15 @@ import {
   FluidForm,
   TextInput,
   Dropdown,
-  Button
+  Button,
+  InlineNotification
 } from 'carbon-components-react'
+import axios from 'axios'
 import { connect } from 'react-redux'
 import { push } from 'connected-react-router'
 import query from '../../const/mediaQuery'
 import { emailRegex } from '../../const/fieldConstants'
+import baseApi from '../../services/api'
 // components
 import items from '../../const/dropdownList'
 import errorMessages from '../../const/errorMessages'
@@ -30,6 +33,7 @@ const Regsitration = (props) => {
       firstName: '',
       lastName: '',
       company: '',
+      networkError: '',
       iAma: '',
       email: '',
       password: ''
@@ -89,10 +93,54 @@ const Regsitration = (props) => {
     }
   }
 
-  const submitForm = async (e) => {
+  const submitForm = (e) => {
     e.preventDefault()
-
-    // TODOD: form submimttions steps.
+    if (
+      errorMsg.firstName ||
+      errorMsg.lastName ||
+      errorMsg.company ||
+      errorMsg.email ||
+      errorMsg.password
+    ) {
+      setState({
+        ...state,
+        errorMsg: {
+          ...state.errorMsg,
+          networkError: 'Please check one or more field for error'
+        }
+      })
+    } else {
+      axios.get(`${baseApi}/users`).then((response) => {
+        const { data } = response
+        if (data.find((elm) => elm.email === email)) {
+          setState({
+            ...state,
+            errorMsg: {
+              ...state.errorMsg,
+              networkError: 'User Already Exists'
+            }
+          })
+        } else {
+          axios
+            .post(`${baseApi}/users`, {
+              firstname: firstName,
+              lastname: lastName,
+              company,
+              email,
+              password
+            })
+            .then(() => {
+              setState({
+                ...state,
+                errorMsg: {
+                  ...state.errorMsg,
+                  networkError: ''
+                }
+              })
+            })
+        }
+      })
+    }
   }
 
   return (
@@ -200,6 +248,15 @@ const Regsitration = (props) => {
                     [e.target.id]: errorMessages.lessthanSix
                   }
                 })
+              } else {
+                setState({
+                  ...state,
+                  errorMsg: {
+                    ...state.errorMsg,
+                    [e.target.id]: ''
+                  }
+                })
+                props.push({ pathname: '/', state: { email, step: 1 } })
               }
             }}
           />
@@ -212,6 +269,22 @@ const Regsitration = (props) => {
           BY creatign a Strobes account, you consent to adn fully accept our
           privacy policy. Term and service apply
         </TandC>
+        {errorMsg.networkError && (
+          <InlineNotification
+            kind="error"
+            role="alert"
+            title={errorMsg.networkError}
+            onCloseButtonClick={() =>
+              setState({
+                ...state,
+                errorMsg: {
+                  ...state.errorMsg,
+                  errorMsg: ''
+                }
+              })
+            }
+          />
+        )}
       </StyledFluidForm>
     </Container>
   )

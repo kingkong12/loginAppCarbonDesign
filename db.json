@@ -1,0 +1,36 @@
+{
+  "users": [
+    {
+      "firstname": "abcasaasasass",
+      "lastname": "asasateewsasasa",
+      "company": "whjz",
+      "email": "abc@gmail.com",
+      "password": "pass123",
+      "id": 1
+    },
+    {
+      "firstname": "abcasas",
+      "lastname": "asasasasasa",
+      "company": "ncjisjka",
+      "email": "abcd@gmail.com",
+      "password": "iiwjeijdjfj",
+      "id": 2
+    },
+    {
+      "firstname": "sssssxscs",
+      "lastname": "Vasani  ",
+      "company": "aaddaddasdeww",
+      "email": "abc@gmail.com",
+      "password": "asd12@",
+      "id": 3
+    },
+    {
+      "firstname": "sssssxscs",
+      "lastname": "sssccscsacasc",
+      "company": "scsccddcdcdc",
+      "email": "cscsc@cscs.com",
+      "password": "cacdcckscjkk12123",
+      "id": 4
+    }
+  ]
+}
