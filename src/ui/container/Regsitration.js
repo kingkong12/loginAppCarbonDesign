@@ -9,12 +9,22 @@ import {
   Form,
   Button
 } from 'carbon-components-react'
+import query from '../../const/mediaQuery'
+import { emailRegex } from '../../const/fieldConstants'
 // components
 import items from '../../const/dropdownList'
 import errorMessages from '../../const/errorMessages'
 
 const Regsitration = () => {
   const [state, setState] = useState({
+    allFields: {
+      firstName: '',
+      lastName: '',
+      company: '',
+      iam: '',
+      email: '',
+      password: ''
+    },
     selectedItem: items[0],
     errorMsg: {
       firstName: '',
@@ -25,6 +35,9 @@ const Regsitration = () => {
       password: ''
     }
   })
+  const { firstName, lastName, company, iam, email, password } = state.allFields
+  const { errorMsg } = state
+
   const setError = (errorField, errorMsg) =>
     setTimeout(
       () =>
@@ -35,18 +48,53 @@ const Regsitration = () => {
       100
     )
 
-  const validatetextFields = (id, value) => {
-    if (value === '') setError(id, errorMessages.emptyField)
-    else if (value.length < 6) setError(id, errorMessages.lessThenFiveChar)
+  const updateFieldsValue = (filedName, value) => {
+    setState({
+      ...state,
+      allFields: { ...state.allFields, [filedName]: value }
+    })
+  }
+
+  const validationTextField = (id, value) => {
+    if (value === '' || value.length < 6)
+      setError(id, errorMessages.lessthanSix)
     else setError(id, '')
+  }
+
+  const validateEmail = (id, value) => {
+    if (value === '') {
+      setState({
+        ...state,
+        errorMsg: {
+          ...state.errorMsg,
+          [id]: errorMessages.emptyField
+        }
+      })
+    } else if (!emailRegex.test(String(value).toLowerCase())) {
+      setState({
+        ...state,
+        errorMsg: {
+          ...state.errorMsg,
+          [id]: errorMessages.vaildEmail
+        }
+      })
+    } else {
+      setState({
+        ...state,
+        errorMsg: {
+          ...state.errorMsg,
+          [id]: ''
+        }
+      })
+    }
   }
 
   const submitForm = async (e) => {
     e.preventDefault()
+
     // TODOD: form submimttions steps.
   }
 
-  const { selectedItem, errorMsg, iAma } = state
   return (
     <Container>
       <PageHeader>Register</PageHeader>
@@ -54,132 +102,100 @@ const Regsitration = () => {
         Alreadty have an account ? <Link> Log In </Link>
       </SubHeader>
 
-      <Form id="registratitonForm" onSubmit={(e) => submitForm(e)}>
+      <StyledFluidForm id="registratitonForm" onSubmit={(e) => submitForm(e)}>
         <FieldWrapper>
-          <StyledFluidForm styles={{ 'margin-bottom': '16px' }}>
-            <StyledFields
-              id="firstName"
-              labelText="First Name"
-              required
-              invalid={Boolean(errorMsg.firstName)}
-              invalidText={errorMsg.firstName}
-              size="xl"
-              onBlur={(e) => {
-                validatetextFields(e.target.id, e.target.value)
-              }}
-              maxLength={50}
-            />
-          </StyledFluidForm>
-
-          <StyledFluidForm>
-            <StyledFields
-              id="lastName"
-              labelText="Last Name"
-              required
-              invalid={Boolean(errorMsg.lastName)}
-              invalidText={errorMsg.lastName}
-              size="xl"
-              maxLength={50}
-              onBlur={(e) => {
-                validatetextFields(e.target.id, e.target.value)
-              }}
-            />
-          </StyledFluidForm>
-
-          <StyledFluidForm>
-            <StyledFields
-              id="company"
-              labelText="Company"
-              required
-              invalid={Boolean(errorMsg.company)}
-              invalidText={errorMsg.company}
-              size="xl"
-              maxLength={70}
-              onBlur={(e) => {
-                validatetextFields(e.target.id, e.target.value)
-              }}
-            />
-          </StyledFluidForm>
-
-          <StyledDropDown
-            id="iAma"
-            label="I am a"
-            size="xl"
-            labelText="drop down"
-            items={items}
-            invalid={Boolean(errorMsg.iAma)}
-            invalidText={errorMsg.iAma}
-            itemToString={(item) => (item ? item.text : '')}
-            value={iAma}
-            onChange={({ selectedItem }) =>
-              setTimeout(() => setState({ ...state, iAma: selectedItem }), 100)
-            }
-            selected={selectedItem}
+          <TextInput
+            id="firstName"
+            labelText="First Name"
+            required
+            invalid={Boolean(errorMsg.firstName)}
+            invalidText={errorMsg.firstName}
+            value={firstName}
+            onInput={(e) => updateFieldsValue(e.target.id, e.target.value)}
+            onBlur={(e) => {
+              validationTextField(e.target.id, e.target.value)
+            }}
+            maxLength={50}
           />
 
-          <StyledFluidForm>
-            <StyledFields
-              id="email"
-              labelText="Email"
-              required
-              size="xl"
-              maxLength={50}
-              invalid={Boolean(errorMsg.email)}
-              invalidText={errorMsg.email}
-              onBlur={(e) => {
-                const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                if (e.target.value === '') {
-                  setState({
-                    ...state,
-                    errorMsg: {
-                      ...state.errorMsg,
-                      [e.target.id]: errorMessages.emptyField
-                    }
-                  })
-                } else if (!re.test(String(e.target.value).toLowerCase())) {
-                  setState({
-                    ...state,
-                    errorMsg: {
-                      ...state.errorMsg,
-                      [e.target.id]: errorMessages.vaildEmail
-                    }
-                  })
-                } else {
-                  setState({
-                    ...state,
-                    errorMsg: {
-                      ...state.errorMsg,
-                      [e.target.id]: ''
-                    }
-                  })
-                }
-              }}
-            />
-          </StyledFluidForm>
-          <StyledFluidForm>
-            <StyledFields
-              type="password"
-              pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
-              id="password"
-              labelText="Password"
-              required
-              invalid={Boolean(errorMsg.password)}
-              invalidText={errorMsg.password}
-              maxLength={70}
-              onBlur={(e) => {
-                const regexPassword = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/g
-                if (!regexPassword.test(String(e.target.value))) {
-                  setState({
-                    ...state,
-                    errorMsg: {
-                      ...state.errorMsg,
-                      [e.target.id]: errorMessages.invalidPassword
-                    }
-                  })
-                }
-              }}
-            />
-          </StyledFluidForm>
+          <TextInput
+            id="lastName"
+            labelText="Last Name"
+            required
+            invalid={Boolean(errorMsg.lastName)}
+            invalidText={errorMsg.lastName}
+            value={lastName}
+            onInput={(e) => updateFieldsValue(e.target.id, e.target.value)}
+            onBlur={(e) => {
+              validationTextField(e.target.id, e.target.value)
+            }}
+            maxLength={50}
+          />
+
+          <TextInput
+            id="company"
+            labelText="Company"
+            required
+            invalid={Boolean(errorMsg.company)}
+            invalidText={errorMsg.company}
+            size="xl"
+            value={company}
+            onInput={(e) => updateFieldsValue(e.target.id, e.target.value)}
+            onBlur={(e) => {
+              validationTextField(e.target.id, e.target.value)
+            }}
+          />
+
+          <StyledDropdown
+            id="iam"
+            size="xl"
+            items={items}
+            label="slect Iam "
+            invalid={false}
+            invalidText="in valid text"
+            itemToString={(item) => (item ? item.text : '')}
+            onChange={({ selectedItem }) => {
+              console.log('sleected ', selectedItem)
+              setTimeout(() => setState({ ...state, iam: selectedItem }), 1000)
+            }}
+            selectedItem={iam}
+          />
+
+          <TextInput
+            id="email"
+            labelText="Email"
+            required
+            size="xl"
+            maxLength={50}
+            value={email}
+            invalid={Boolean(errorMsg.email)}
+            invalidText={errorMsg.email}
+            onInput={(e) => updateFieldsValue(e.target.id, e.target.value)}
+            onBlur={(e) => validateEmail(e.target.id, e.target.value)}
+          />
+
+          <TextInput
+            type="password"
+            id="password"
+            labelText="Password"
+            required
+            invalid={Boolean(errorMsg.password)}
+            invalidText={errorMsg.password}
+            maxLength={70}
+            value={password}
+            onInput={(e) => updateFieldsValue(e.target.id, e.target.value)}
+            onBlur={(e) => {
+              if (e.target.value.length < 6) {
+                setState({
+                  ...state,
+                  errorMsg: {
+                    ...state.errorMsg,
+                    [e.target.id]: errorMessages.lessthanSix
+                  }
+                })
+              }
+            }}
+          />
         </FieldWrapper>
 
         <StyledButton kind="primary" type="submit">
@@ -189,12 +205,10 @@ const Regsitration = () => {
           BY creatign a Strobes account, you consent to adn fully accept our
           privacy policy. Term and service apply
         </TandC>
-      </Form>
+      </StyledFluidForm>
     </Container>
   )
 }
-
-const StyledDropDown = styled(Dropdown)``
 
 const StyledFluidForm = styled(FluidForm)`
   margin-bottom: 16px;
@@ -209,21 +223,6 @@ const StyledButton = styled(Button)`
   height: 4rem;
   border-radius: 4px;
   margin-top: 30px;
-`
-
-const StyledFields = styled(TextInput)`
-  min-width: 368px;
-`
-const StyledSelect = styled(Select)`
-  > div {
-    min-width: 368px !important;
-    > select {
-      min-width: 368px !important;
-      min-height: 64px;
-      position: relative;
-      top: 0px;
-    }
-  }
 `
 
 export const Container = styled.div``
@@ -241,6 +240,13 @@ const FieldWrapper = styled.div`
   display: grid;
   grid-template-columns: auto auto;
   grid-column-gap: 32px;
+  grid-row-gap: 16px;
+  @media ${query.lessThanMedium} {
+    grid-template-columns: auto;
+    padding: 0px 8px;
+  }
 `
-
+const StyledDropdown = styled(Dropdown)`
+  min-height: 64px;
+`
 export default Regsitration
