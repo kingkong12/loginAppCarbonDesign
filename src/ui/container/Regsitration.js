@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { PropTypes } from 'prop-types'
 import {
   Link,
   FluidForm,
@@ -129,14 +130,16 @@ const Regsitration = (props) => {
               email,
               password
             })
-            .then(() => {
-              setState({
-                ...state,
-                errorMsg: {
-                  ...state.errorMsg,
-                  networkError: ''
-                }
-              })
+            .then((resp) => {
+              console.log('resp', resp)
+              // setState({
+              //   ...state,
+              //   errorMsg: {
+              //     ...state.errorMsg,
+              //     networkError: ''
+              //   }
+              // })
+              props.push({ pathname: '/', state: { email, step: 1 } })
             })
         }
       })
@@ -207,7 +210,6 @@ const Regsitration = (props) => {
             invalidText="in valid text"
             itemToString={(item) => (item ? item.text : '')}
             onChange={({ selectedItem }) => {
-              console.log('sleected ', selectedItem)
               setTimeout(() => setState({ ...state, iam: selectedItem }), 1000)
             }}
             selectedItem={iam}
@@ -256,7 +258,6 @@ const Regsitration = (props) => {
                     [e.target.id]: ''
                   }
                 })
-                props.push({ pathname: '/', state: { email, step: 1 } })
               }
             }}
           />
@@ -344,6 +345,10 @@ const mapStateToProps = (state) => {
   return {
     router: state.router
   }
+}
+
+Regsitration.propTypes = {
+  router: PropTypes.object
 }
 
 export default connect(mapStateToProps, { push })(Regsitration)

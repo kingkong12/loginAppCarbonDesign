@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react'
+import { PropTypes } from 'prop-types'
 import {
   Link,
   FluidForm,
@@ -14,15 +15,11 @@ import { connect } from 'react-redux'
 import { push } from 'connected-react-router'
 import axios from 'axios'
 
-import { iconArrowLeft, iconArrowRight } from 'carbon-icons'
+import { iconArrowLeft } from 'carbon-icons'
 // constants-helpers
 
 import baseApi from '../../services/api'
-import {
-  organizationMinLength,
-  emailRegex,
-  loginOption
-} from '../../const/fieldConstants'
+import { organizationMinLength, emailRegex } from '../../const/fieldConstants'
 import query from '../../const/mediaQuery'
 import errorMessages from '../../const/errorMessages'
 // components
@@ -111,6 +108,12 @@ const Loginform = (props) => {
           <TextInput
             //  TODO:  ahow and hide in password
             value={loginPassword || ''}
+            onFocus={(e) =>
+              setState({
+                ...state,
+                networkError: ''
+              })
+            }
             onInput={(e) =>
               setState({ ...state, loginPassword: e.target.value })
             }
@@ -188,6 +191,7 @@ const Loginform = (props) => {
     } else {
       axios.get(`${baseApi}/users`).then((response) => {
         const { data } = response
+
         if (
           data.find(
             (elm) => elm.email === loginEmail && elm.password === loginPassword
@@ -197,11 +201,11 @@ const Loginform = (props) => {
             ...state,
             networkError: ''
           })
-          props.push({ pathname: '/registration' })
+          props.push({ pathname: '/success' })
         } else {
           setState({
             ...state,
-            networkError: 'Email or Password not incorrect'
+            networkError: 'Email or Passwort is  incorrect'
           })
           return
         }
@@ -214,7 +218,10 @@ const Loginform = (props) => {
       <PageHeader>Log in</PageHeader>
       <SubHeader>
         Don't have an Account?
-        <Link onClick={() => props.push({ pathname: '/registration' })}>
+        <Link
+          // Note used :Ink tag instead of button here
+          onClick={() => props.push({ pathname: '/registration' })}
+        >
           {'\u00A0'}Register Now
         </Link>
       </SubHeader>
@@ -225,11 +232,11 @@ const Loginform = (props) => {
           <Button
             onClick={(e) => {
               let newStep = 0
-              if (step == 3) newStep = step + 1
-              if (step == 4) newStep = 1
-              if (step == 1)
+              if (step === 3) newStep = step + 1
+              if (step === 4) newStep = 1
+              if (step === 1)
                 emailError ? (newStep = step) : (newStep = step + 1)
-              if (step == 2) {
+              if (step === 2) {
                 newStep = step
                 onSubmit(e)
               }
@@ -323,4 +330,9 @@ const StyledNotification = styled(InlineNotification)`
   background-color: #fdf1f1;
   color: #4d4949;
 `
+
+Loginform.propTypes = {
+  router: PropTypes.object
+}
+
 export default connect(mapStateToProps, { push })(Loginform)
