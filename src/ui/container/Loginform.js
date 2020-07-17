@@ -108,6 +108,12 @@ const Loginform = (props) => {
           <TextInput
             //  TODO:  ahow and hide in password
             value={loginPassword || ''}
+            onFocus={(e) =>
+              setState({
+                ...state,
+                networkError: ''
+              })
+            }
             onInput={(e) =>
               setState({ ...state, loginPassword: e.target.value })
             }
@@ -185,12 +191,7 @@ const Loginform = (props) => {
     } else {
       axios.get(`${baseApi}/users`).then((response) => {
         const { data } = response
-        console.log(
-          'ssscscsc',
-          data.find(
-            (elm) => elm.email === loginEmail && elm.password === loginPassword
-          )
-        )
+
         if (
           data.find(
             (elm) => elm.email === loginEmail && elm.password === loginPassword
