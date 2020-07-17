@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { PropTypes } from 'prop-types'
 import {
   Link,
   FluidForm,
@@ -344,6 +345,10 @@ const mapStateToProps = (state) => {
   return {
     router: state.router
   }
+}
+
+Regsitration.propTypes = {
+  router: PropTypes.object
 }
 
 export default connect(mapStateToProps, { push })(Regsitration)

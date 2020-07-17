@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react'
+import { PropTypes } from 'prop-types'
 import {
   Link,
   FluidForm,
@@ -184,6 +185,12 @@ const Loginform = (props) => {
     } else {
       axios.get(`${baseApi}/users`).then((response) => {
         const { data } = response
+        console.log(
+          'ssscscsc',
+          data.find(
+            (elm) => elm.email === loginEmail && elm.password === loginPassword
+          )
+        )
         if (
           data.find(
             (elm) => elm.email === loginEmail && elm.password === loginPassword
@@ -193,11 +200,11 @@ const Loginform = (props) => {
             ...state,
             networkError: ''
           })
-          props.push({ pathname: '/registration' })
+          props.push({ pathname: '/success' })
         } else {
           setState({
             ...state,
-            networkError: 'Email or Password not incorrect'
+            networkError: 'Email or Passwort is  incorrect'
           })
           return
         }
@@ -210,7 +217,10 @@ const Loginform = (props) => {
       <PageHeader>Log in</PageHeader>
       <SubHeader>
         Don't have an Account?
-        <Link onClick={() => props.push({ pathname: '/registration' })}>
+        <Link
+          // Note used :Ink tag instead of button here
+          onClick={() => props.push({ pathname: '/registration' })}
+        >
           {'\u00A0'}Register Now
         </Link>
       </SubHeader>
@@ -319,4 +329,9 @@ const StyledNotification = styled(InlineNotification)`
   background-color: #fdf1f1;
   color: #4d4949;
 `
+
+Loginform.propTypes = {
+  router: PropTypes.object
+}
+
 export default connect(mapStateToProps, { push })(Loginform)

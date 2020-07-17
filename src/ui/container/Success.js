@@ -4,8 +4,8 @@ const SuccessScreen = () => {
   return (
     <div>
       Logged in successfully
-      <br /> Please Nte: we do not generate any token from BE or save on the
-      front end side
+      <br /> Please Note: we do not generate any token to keep a session of user
+      being logged in
     </div>
   )
 }
